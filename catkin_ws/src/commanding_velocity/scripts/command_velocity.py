@@ -58,28 +58,32 @@ class MazeSolver:
         def laserscan_callback(self, laser_msg):
                 self.laser = laser_msg
                 # value at in front of robot (90 degrees)
-                self.f_range = laser_msg.ranges[315:325]
+                self.f_range = laser_msg.ranges[211:428]
                 #value to the right of robot (180 degrees)
-                self.l_range = laser_msg.ranges[629:639]
+                self.l_range = laser_msg.ranges[429:639]
                 # value to the left of robot (0 degrees)
-                self.r_range = laser_msg.ranges[0:10]
+                self.r_range = laser_msg.ranges[0:210]
                 
                 self.f_min = min(self.f_range)
                 self.r_min = min(self.r_range)
                 self.l_min = min(self.l_range)
+
+                #print("f_min: ", self.f_min)
+                #print("r_min: ", self.r_min)
+                #print("l_min: ", self.l_min)
 
 
         def move_to_wall(self):
                 #print('moving towards a wall')
                 if (self.f_min > 0.5 and self.r_min > 0.5 and self.l_min > 0.5): # checking if anything is near
                         #print(self.f_range)
-                        print(self.l_min)
+                        #print(self.l_min)
                         self.mv.angular.z = -0.1
                         self.mv.linear.x = 0.15 # go forward
                 elif (self.l_min < 0.5):
-                        print(self.l_min)
+                        #print(self.l_min)
                         self.near_wall = True
-                        print('near left wall')
+                        #print('near left wall')
                 else:
                         self.mv.angular.z = -0.25
                         self.mv.linear.x = 0.0
@@ -88,10 +92,10 @@ class MazeSolver:
         
         def follow_wall(self):
                 if (self.f_min > 0.5): # start following the left wall
-                        if (self.l_min < 0.3): # if too close to the left wall reverse a bit
+                        if (self.l_min < 0.35 or self.r_min < 0.35 or self.f_min < 0.35): # if too close to the left wall reverse a bit
                                 print(self.l_min, ': Too close, Reversing')
                                 self.mv.angular.z = -1.2
-                                self.mv.linear.x = -0.1
+                                self.mv.linear.x = -0.3
                         elif(self.l_min > 0.5): # follow by zig-zagging
                                 print(self.l_min)
                                 print('following wall')
